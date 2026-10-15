@@ -117,9 +117,14 @@ void ov17_02203638(BerryPotsAppData *data);
 void ov17_022036FC(BerryPotsAppData *data, enum BerryPotsApp_022036FC_Action action, u8 potIndex);
 void ov17_022037C8(BerryPotsAppData *data, BOOL a1);
 void ov17_0220387C(BerryPotsAppData *data);
+// The functions under SDK_PORT guards are defined static in berry_pots_app_tasks.c,
+// which GCC and Clang reject after an extern declaration.
+#ifndef SDK_PORT
 void ov17_02203928(BerryPotsAppData *data);
+#endif
 u32 ov17_02203A34(BerryPotsAppData *data);
 BOOL ov17_02203A54(BerryPotsAppData *data);
+#ifndef SDK_PORT
 u32 ov17_02203A74(BerryPotsAppData *data, u32 a1);
 u32 ov17_02203AD4(BerryPotsAppData *data);
 u32 ov17_02203B68(BerryPotsAppData *data, BOOL *a1);
@@ -128,5 +133,6 @@ BOOL ov17_02203C20(BerryPotsAppData *data, BOOL *a1);
 int ov17_02203C78(BerryPotsAppData *data);
 int ov17_02203CC8(BerryPotsAppData *data);
 u32 ov17_02203D00(BerryPotsAppData *data);
+#endif
 
 #endif // POKEHEARTGOLD_BERRY_POTS_APP_INTERNAL_H

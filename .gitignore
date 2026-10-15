@@ -11,6 +11,9 @@ tools/bin/**
 build/**
 sub/build/**
 
+# Portable MSYS2 used by the PC port on Windows
+msys2/
+
 # CLion folders
 .idea/
 cmake-build-debug/

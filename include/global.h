@@ -8,6 +8,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef SDK_PORT
+#include "port/sdk_compat.h"
+#endif
 #endif
 
 #include "constants/global.h"
@@ -24,6 +27,10 @@ typedef struct {
     int z;
 } Vec32;
 
+#ifdef SDK_PORT
+// The struct copy below cannot target arrays of const elements under GCC or Clang.
+#define ARRAY_ASSIGN_EX(dest, src, as_type, count) memcpy((void *)&(dest), &(src), sizeof(as_type) * (count))
+#else
 #define ARRAY_ASSIGN_EX(dest, src, as_type, count)            \
     {                                                         \
         struct tmp {                                          \
@@ -31,6 +38,7 @@ typedef struct {
         };                                                    \
         *(struct tmp *)&(dest) = *(const struct tmp *)&(src); \
     }
+#endif
 
 #define ARRAY_ASSIGN(dest, src) ARRAY_ASSIGN_EX(dest, src, typeof(*(dest)), NELEMS(dest))
 

@@ -1,0 +1,5 @@
+[wrap-git]
+url = https://github.com/cybervisi0n/libntr.git
+revision = 1555d911ac80c0190ac1c321f99f1323de8b3c09
+depth = 1
+directory = libntr

@@ -48,6 +48,12 @@
 #include "unk_020971F8.h"
 #include "vram_transfer_manager.h"
 
+#ifdef SDK_PORT
+#define POWCNT_DSEL_BIT REG_GX_POWCNT_DSEL_MASK
+#else
+#define POWCNT_DSEL_BIT (REG_POWCNT_ADDR / 2048)
+#endif
+
 static const u8 ov44_02235360[4] = { 0, 2, 4, 0 };
 
 static const u8 ov44_02235364[4] = { 8, 7, 5, 7 };
@@ -1736,7 +1742,7 @@ s32 ov44_0222BAD0(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 
 s32 ov44_0222BB38(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
     if (TextPrinterCheckActive(arg0->unk180) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             arg0->unk184 = Std_CreateYesNoMenu(arg0->unk15C, &ov44_0223538C, 473, 11, HEAP_ID_53);
         } else {
             arg0->unk188 = ov44_02231A28(arg0->unk15C, &ov44_02235374, 0);
@@ -1747,7 +1753,7 @@ s32 ov44_0222BB38(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 }
 
 s32 ov44_0222BBA4(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
         s32 temp_r0 = Handle2dMenuInput_DeleteOnFinish(arg0->unk184, HEAP_ID_53);
         if (temp_r0 == -1) {
             return arg1;
@@ -2409,7 +2415,7 @@ s32 ov44_0222CDAC(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
         if (ov00_021E6EBC() != -1) {
             sub_0202C4B0(arg0->unk0, ov00_021E6EBC());
         }
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             arg0->unk184 = Std_CreateYesNoMenu(arg0->unk15C, &ov44_0223538C, 473, 11, HEAP_ID_53);
         } else {
             arg0->unk188 = ov44_02231A14(arg0->unk15C, &ov44_02235374, 0);
@@ -2420,7 +2426,7 @@ s32 ov44_0222CDAC(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 }
 
 s32 ov44_0222CE40(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
         s32 temp_r0 = Handle2dMenuInput_DeleteOnFinish(arg0->unk184, HEAP_ID_53);
         if (temp_r0 == -1) {
             if ((sub_020390C4() >= 4) || (sub_02039264() != 0) || (sub_020373B4(0) == 0)) {
@@ -2593,7 +2599,7 @@ s32 ov44_0222D214(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 s32 ov44_0222D23C(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
     ov44_02232018(&arg0->unk38C);
     if (TextPrinterCheckActive(arg0->unk180) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             arg0->unk184 = Std_CreateYesNoMenu(arg0->unk15C, &ov44_0223538C, 473, 11, HEAP_ID_53);
         } else {
             arg0->unk188 = ov44_02231A14(arg0->unk15C, &ov44_02235374, 0);
@@ -2604,7 +2610,7 @@ s32 ov44_0222D23C(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 }
 
 s32 ov44_0222D2B0(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
         s32 var_r5 = Handle2dMenuInput_DeleteOnFinish(arg0->unk184, HEAP_ID_53);
         ov44_02232018(&arg0->unk38C);
         if ((arg0->unk370 == -1) && (ov00_021E709C() != -1)) {
@@ -3564,7 +3570,7 @@ s32 ov44_0222EC14(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 
 s32 ov44_0222EC2C(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
     if (TextPrinterCheckActive(arg0->unk180) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             arg0->unk184 = Std_CreateYesNoMenu(arg0->unk15C, &ov44_0223538C, 473, 11, HEAP_ID_53);
         } else {
             arg0->unk188 = ov44_02231A14(arg0->unk15C, &ov44_02235374, 0);
@@ -3575,7 +3581,7 @@ s32 ov44_0222EC2C(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 }
 
 s32 ov44_0222EC98(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
-    if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+    if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
         s32 var_r5 = Handle2dMenuInput_DeleteOnFinish(arg0->unk184, HEAP_ID_53);
         if (TextPrinterCheckActive(arg0->unk180) != 0) {
             return arg1;
@@ -3659,7 +3665,7 @@ s32 ov44_0222EE54(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
     }
     sub_020398D4(0, 1);
     if (TextPrinterCheckActive(arg0->unk180) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             arg0->unk184 = Std_CreateYesNoMenu(arg0->unk15C, &ov44_0223538C, 473, 11, HEAP_ID_53);
         } else {
             arg0->unk188 = ov44_02231A28(arg0->unk15C, &ov44_02235374, 0);
@@ -3674,7 +3680,7 @@ s32 ov44_0222EED4(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
         return arg1;
     }
     if ((sub_02039274() != 0) || (sub_02039264() != 0) || (sub_020390C4() >= 3)) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             Clear2dMenuWindowAndDelete(arg0->unk184, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(arg0->unk188);
@@ -3683,14 +3689,14 @@ s32 ov44_0222EED4(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
         arg0->unk348 = 28;
     } else {
         if (sub_020393C8() != 0) {
-            if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+            if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
                 Clear2dMenuWindowAndDelete(arg0->unk184, HEAP_ID_53);
             } else {
                 YesNoPrompt_Destroy(arg0->unk188);
             }
             ov44_0222B9A0(arg0);
         } else {
-            if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+            if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
                 s32 temp_r0 = Handle2dMenuInput_DeleteOnFinish(arg0->unk184, HEAP_ID_53);
                 if (temp_r0 == -1) {
                     return arg1;
@@ -3756,7 +3762,7 @@ s32 ov44_0222F0AC(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
         return arg1;
     }
     if (TextPrinterCheckActive(arg0->unk180) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             arg0->unk184 = Std_CreateYesNoMenu(arg0->unk15C, &ov44_0223538C, 473, 11, HEAP_ID_53);
         } else {
             arg0->unk188 = ov44_02231A14(arg0->unk15C, &ov44_02235374, 0);
@@ -3769,7 +3775,7 @@ s32 ov44_0222F0AC(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
 s32 ov44_0222F194(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
     s32 temp_r0 = ov44_02231C70(&arg0->unk38C);
     if (ov44_0222AAEC(arg0, temp_r0) == 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             Clear2dMenuWindowAndDelete(arg0->unk184, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(arg0->unk188);
@@ -3783,7 +3789,7 @@ s32 ov44_0222F194(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
     u32 r0 = ov44_02229F00(arg0, temp_r0_2);
     u8 r7 = temp_r0_2->unk21;
     if ((arg0->unk37E != r0) || (arg0->unk380 != r7)) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             Clear2dMenuWindowAndDelete(arg0->unk184, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(arg0->unk188);
@@ -3794,7 +3800,7 @@ s32 ov44_0222F194(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
         return arg1;
     }
     if (sub_020393C8() != 0) {
-        if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             Clear2dMenuWindowAndDelete(arg0->unk184, HEAP_ID_53);
         } else {
             YesNoPrompt_Destroy(arg0->unk188);
@@ -3802,7 +3808,7 @@ s32 ov44_0222F194(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
         ov44_0222B9A0(arg0);
     } else {
         if (sub_020390C4() >= 3) {
-            if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+            if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
                 Clear2dMenuWindowAndDelete(arg0->unk184, HEAP_ID_53);
             } else {
                 YesNoPrompt_Destroy(arg0->unk188);
@@ -3811,7 +3817,7 @@ s32 ov44_0222F194(UnkStruct_ov44_022319EC *arg0, s32 arg1) {
             sub_02039358();
             arg0->unk348 = 29;
             return arg1;
-        } else if ((REG_POWCNT_ADDR / 2048 & reg_GX_POWCNT) >> 15 == 1) {
+        } else if ((POWCNT_DSEL_BIT & reg_GX_POWCNT) >> 15 == 1) {
             s32 menuInputResult = Handle2dMenuInput_DeleteOnFinish(arg0->unk184, HEAP_ID_53);
             if (menuInputResult == -1) {
                 return arg1;

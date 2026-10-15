@@ -1,16 +1,23 @@
 
-libspl_c_args = [
-    '-nothumb',
-    '-wrap:sdk', '1.2/base_b73',
-    '-wrap:noipa',
-]
+libspl_c_args = []
+libspl_link_args = []
 
-libspl_link_args = [
-    '-library',
-    '-nothumb',
-    '-main', '""',
-    '-nostdlib',
-]
+if build_target != 'arm'
+    libspl_c_args = pc_c_args
+else
+    libspl_c_args = [
+        '-nothumb',
+        '-wrap:sdk', '1.2/base_b73',
+        '-wrap:noipa',
+    ]
+
+    libspl_link_args = [
+        '-library',
+        '-nothumb',
+        '-main', '""',
+        '-nostdlib',
+    ]
+endif
 
 libspl_public_includes = include_directories('include')
 
@@ -32,5 +39,6 @@ libspl = static_library('spl',
     link_args: libspl_link_args,
     include_directories: [public_includes, libspl_public_includes],
     dependencies: [nitrosdk_dep, nitrosystem_dep],
-    pic: false
+    pic: false,
+    native: build_target != 'arm'
 )

@@ -8,6 +8,7 @@ project('pokeheartgold', ['c', 'cpp', 'nasm'],
 )
 
 fs = import('fs')
+build_target = get_option('build_target')
 
 ############################################################
 ###                    INCLUDE PATHS                     ###
@@ -60,46 +61,94 @@ link_args = [
     '-sym', 'on'
 ]
 
-add_global_arguments(c_args,
-    language: 'c',
-    native: false
-)
+if build_target == 'arm'
+    add_global_arguments(c_args,
+        language: 'c',
+        native: false
+    )
+else
+    pc_c_args = [
+        '-std=gnu99',
+        '-g',
+        '-fwrapv',
+        '-fno-strict-aliasing',
+        '-fsigned-char',
+        '-fcommon',
+    ]
+    # Code written for mwcc trips several diagnostics that newer GCC releases turn into errors.
+    pc_c_args += meson.get_compiler('c', native: true).get_supported_arguments(
+        '-Wno-error=implicit-function-declaration',
+        '-Wno-error=implicit-int',
+        '-Wno-error=int-conversion',
+        '-Wno-error=incompatible-pointer-types',
+        '-Wno-error=return-mismatch',
+        '-Wno-error=return-type',
+    )
+endif
 
 ############################################################
 ###                     DEPENDENCIES                     ###
 ############################################################
-nitrosdk_dep = dependency('NitroSDK',
-    default_options : {
-        'mwrap_sdk' : '2.0/sp1p2',
-        'mwrap_patch3_libs' : '2.0/sp2p3',
-        'mwrap_arm7' : '2.0/sp2p3',
-        'mwrap_libwl_arm7' : '2.0/sp1p2',
-        'sp1p3_conditionals' : true,
-        'patch3' : true,
-        'irc_support' : true,
-    }
-)
+if build_target == 'arm'
+    nitrosdk_dep = dependency('NitroSDK',
+        default_options : {
+            'mwrap_sdk' : '2.0/sp1p2',
+            'mwrap_patch3_libs' : '2.0/sp2p3',
+            'mwrap_arm7' : '2.0/sp2p3',
+            'mwrap_libwl_arm7' : '2.0/sp1p2',
+            'sp1p3_conditionals' : true,
+            'patch3' : true,
+            'irc_support' : true,
+        }
+    )
 
-nitrosystem_dep = dependency('NitroSystem',
-    default_options: {
-        'mwrap_sdk': '2.0/sp2',
-    }
-)
+    nitrosystem_dep = dependency('NitroSystem',
+        default_options: {
+            'mwrap_sdk': '2.0/sp2',
+        }
+    )
 
-nitrowifi_dep = dependency('NitroWiFi',
-    default_options: {
-        'mwrap_sdk': '2.0/sp1p2',
-        'sp1p3_conditionals': true
-    }
-)
+    nitrowifi_dep = dependency('NitroWiFi',
+        default_options: {
+            'mwrap_sdk': '2.0/sp1p2',
+            'sp1p3_conditionals': true
+        }
+    )
 
-nitrodwc_dep = dependency('NitroDWC',
-    default_options: {
-        'mwrap_sdk': '2.0/sp2p2'
-    }
-)
+    nitrodwc_dep = dependency('NitroDWC',
+        default_options: {
+            'mwrap_sdk': '2.0/sp2p2'
+        }
+    )
 
-libvct_dep = dependency('libvct')
+    libvct_dep = dependency('libvct')
+else
+    # libntr must come first: the other libraries look up the NitroSDK dependency it overrides.
+    libntr_proj = subproject('libntr',
+        default_options: {
+            'card_game_code': game_version == 'SOULSILVER' ? 'IPGE' : 'IPKE',
+            'card_maker_code': '01',
+        }
+    )
+    libntrsystem_proj = subproject('libntrsystem')
+    libntrwifi_proj = subproject('libntrwifi')
+    libntrdwc_proj = subproject('libntrdwc')
+    libvct_proj = subproject('libvct_pc')
+
+    nitrosdk_dep = dependency('NitroSDK')
+    nitrosystem_dep = dependency('NitroSystem')
+    nitrowifi_dep = dependency('NitroWiFi')
+    nitrodwc_dep = dependency('NitroDWC')
+    libvct_dep = dependency('libvct')
+
+    libntr_provided_libs = [
+        libntr_proj.get_variable('nitrosdk_libs'),
+        libntrsystem_proj.get_variable('nitrosystem_libs'),
+        libntrwifi_proj.get_variable('nitrowifi_libs'),
+        libntrdwc_proj.get_variable('nitrodwc_libs'),
+        libvct_proj.get_variable('libvct'),
+    ]
+endif
 
 ############################################################
 ###                         TOOLS                        ###
@@ -109,15 +158,17 @@ subdir('tools')
 ############################################################
 ###                      SPEC FILES                      ###
 ############################################################
-# Generate main.lcf
-main_lsf = files('main.lsf')
-main_lcf_template = subproject('NitroSDK').get_variable('main_lcf_template')
+if build_target == 'arm'
+    # Generate main.lcf
+    main_lsf = files('main.lsf')
+    main_lcf_template = subproject('NitroSDK').get_variable('main_lcf_template')
 
-main_lcf = custom_target('main.lcf',
-    output: 'main.lcf',
-    input: main_lsf + main_lcf_template,
-    command: [makelcf_exe, '@INPUT@','@OUTPUT@']
-)
+    main_lcf = custom_target('main.lcf',
+        output: 'main.lcf',
+        input: main_lsf + main_lcf_template,
+        command: [makelcf_exe, '@INPUT@','@OUTPUT@']
+    )
+endif
 
 subdir('heartgold.us')
 subdir('soulsilver.us')
@@ -137,6 +188,81 @@ subdir('files')
 ############################################################
 subdir('asm')
 subdir('src')
+
+############################################################
+###                    PC EXECUTABLE                     ###
+############################################################
+if build_target != 'arm'
+    # libntr builds the PC libraries for the build machine, so every PC target here is native too.
+    pc_game_args = pc_c_args + [
+        '-DPM_KEEP_ASSERTS',
+        '-D' + game_version,
+    ]
+
+    pc_deps = [
+        nitrosdk_dep,
+        nitrosystem_dep,
+        nitrowifi_dep,
+        nitrodwc_dep,
+        libvct_dep,
+    ]
+    if build_target == 'win64'
+        pc_deps += meson.get_compiler('c', native: true).find_library('ws2_32')
+    endif
+
+    pokeheartgold_game = static_library('pokeheartgold_game',
+        sources : [
+            pokeheartgold_c,
+            naix_headers,
+        ],
+        c_args : pc_game_args,
+        include_directories : [
+            public_includes,
+            lib_asm_includes,
+        ],
+        dependencies : pc_deps,
+        native : true,
+    )
+
+    asm_stubs = custom_target('asm_stubs',
+        output : [
+            'asm_stub_funcs.c',
+            'asm_stub_data.c',
+        ],
+        command : [
+            find_program('tools/port/gen_asm_stubs.py', native: true),
+            '--nm', find_program('nm', native: true),
+            '--game-lib', pokeheartgold_game,
+            '--provided-lib', libspl, libntr_provided_libs,
+            '--asm', pokeheartgold_asm, nitrodwc_asm, libcrypto_static_srcs, libdwcppwlobby_srcs, libirc_srcs,
+            '--funcs-out', '@OUTPUT0@',
+            '--data-out', '@OUTPUT1@',
+        ],
+    )
+
+    main = executable('main',
+        sources : [
+            asm_stubs,
+            files(
+                'src/port/asm_stub_runtime.c',
+                'src/port/dsprot.c',
+            ),
+            naix_headers,
+        ],
+        c_args : pc_game_args,
+        include_directories : [
+            public_includes,
+            lib_asm_includes,
+        ],
+        dependencies : pc_deps,
+        link_whole : pokeheartgold_game,
+        link_with : libspl,
+        native : true,
+    )
+
+    meson.add_postconf_script(postconf_py)
+    subdir_done()
+endif
 
 libdsprot = fs.copyfile('lib/dsprot/libdsprot.a')
 

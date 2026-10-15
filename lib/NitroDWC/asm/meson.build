@@ -8,12 +8,14 @@ libcrypto_static_srcs = files(
 
 dwc_includes = include_directories('include')
 
-libcrypto_static = static_library('crypto_static',
-    sources: libcrypto_static_srcs,
-    include_directories: [public_includes, dwc_includes],
-    pic: false
-)
+if build_target == 'arm'
+    libcrypto_static = static_library('crypto_static',
+        sources: libcrypto_static_srcs,
+        include_directories: [public_includes, dwc_includes],
+        pic: false
+    )
 
-crypto_static_dep = declare_dependency(
-    link_with: libcrypto_static
-)
+    crypto_static_dep = declare_dependency(
+        link_with: libcrypto_static
+    )
+endif

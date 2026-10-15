@@ -1,1 +1,2 @@
 option('game_version', type : 'combo', choices : ['HEARTGOLD', 'SOULSILVER'], value : 'HEARTGOLD')
+option('build_target', type : 'combo', choices : ['arm', 'win64', 'linux'], value : 'arm', description : 'arm builds the DS ROM; win64 and linux build the PC port on top of libntr')

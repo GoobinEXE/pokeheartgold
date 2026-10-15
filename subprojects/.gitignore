@@ -6,5 +6,10 @@ meson-*
 metroskrew*
 yyjson-*
 libvct-*
+libntr/
+libntrsystem/
+libntrwifi/
+libntrdwc/
+libvct_pc/
 .wraplock
 packagecache/

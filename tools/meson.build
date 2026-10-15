@@ -13,7 +13,9 @@ subdir('postconf')
 subdir('scripts')
 
 # Tools from the subprojects
-makelcf_exe = find_program('makelcf', native: true)
+if build_target == 'arm'
+    makelcf_exe = find_program('makelcf', native: true)
+endif
 
 # Native tools
 arm_none_eabi_gcc_exe = find_program('arm-none-eabi-gcc', native: true)

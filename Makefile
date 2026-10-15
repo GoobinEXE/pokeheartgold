@@ -2,7 +2,9 @@
 	all 			\
 	check			\
 	heartgold		\
+	linux			\
 	meson   		\
+	pc_sdk_headers	\
 	release 		\
 	rom 			\
 	setup_release 	\
@@ -12,7 +14,8 @@
 	skrewrm 		\
 	skrewup 		\
 	target  		\
-	update
+	update			\
+	win64
 
 GAME_VERSION ?= HEARTGOLD
 GAME_LANGUAGE ?= ENGLISH
@@ -43,6 +46,8 @@ MESON ?= $(MESON_SUB)
 GIT ?= git
 
 BUILD ?= build/$(target_name).$(target_region)
+BUILD_WIN64 ?= $(BUILD).win64
+BUILD_LINUX ?= $(BUILD).linux
 
 UNAME_R := $(shell uname -r)
 UNAME_S := $(shell uname -s)
@@ -141,6 +146,39 @@ $(BUILD)/build.ninja: | $(BUILD) $(SKREW_EXE) meson
 
 $(BUILD):
 	mkdir -p -- $(BUILD)
+
+############################################################
+###                       PC PORT                        ###
+############################################################
+# The executable extracts the game files from your own ROM on first launch.
+
+win64: $(BUILD_WIN64)/build.ninja
+	$(MESON) compile -C $(BUILD_WIN64) main
+
+linux: $(BUILD_LINUX)/build.ninja
+	$(MESON) compile -C $(BUILD_LINUX) main
+
+# Data files under files/ include headers straight from these SDK checkouts.
+pc_sdk_headers: meson
+	$(MESON) subprojects download NitroSDK NitroSystem
+
+$(BUILD_WIN64)/build.ninja: | $(SKREW_EXE) meson pc_sdk_headers
+	$(MESON) setup \
+		-Dgame_version=$(GAME_VERSION) \
+		-Dbuild_target=win64 \
+		--wrap-mode=nopromote \
+		--native-file=meson/$(NATIVE) \
+		--cross-file=meson/cross_pcport_win64.ini \
+		-- $(BUILD_WIN64)
+
+$(BUILD_LINUX)/build.ninja: | $(SKREW_EXE) meson pc_sdk_headers
+	$(MESON) setup \
+		-Dgame_version=$(GAME_VERSION) \
+		-Dbuild_target=linux \
+		--wrap-mode=nopromote \
+		--native-file=meson/$(NATIVE) \
+		--cross-file=meson/cross_pcport_linux.ini \
+		-- $(BUILD_LINUX)
 
 update: meson skrewup
 	$(MESON) subprojects update || true

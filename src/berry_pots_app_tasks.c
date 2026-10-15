@@ -23,6 +23,18 @@ static const TouchscreenHitbox ov17_02203FC0 = {
     .rect = { 160, 192, 192, 0 }
 };
 
+#ifdef SDK_PORT
+static void ov17_02203928(BerryPotsAppData *data);
+static u32 ov17_02203A74(BerryPotsAppData *data, u32 a1);
+static u32 ov17_02203AD4(BerryPotsAppData *data);
+static u32 ov17_02203B68(BerryPotsAppData *data, BOOL *a1);
+static BOOL ov17_02203B88(BerryPotsAppData *data);
+static BOOL ov17_02203C20(BerryPotsAppData *data, BOOL *a1);
+static int ov17_02203C78(BerryPotsAppData *data);
+static int ov17_02203CC8(BerryPotsAppData *data);
+static u32 ov17_02203D00(BerryPotsAppData *data);
+#endif
+
 static void ov17_022035A4(SysTask *task, SysTaskArgs_ov17_0220351C *args);
 
 void ov17_0220351C(BerryPotsAppData *data) {
